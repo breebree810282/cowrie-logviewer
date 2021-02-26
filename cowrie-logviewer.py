@@ -182,7 +182,7 @@ def get_uploaded_files():
 		tmp = []
 		if(f.size >= min_upload_size and f.name != '.gitignore'):
 			tmp.append(str(f.name))
-			tmp.append(f.size)
+			tmp.append(str(f.size) + " Bytes")
 			uploaded_files.append(tmp)
 
 	return sorted(uploaded_files)
