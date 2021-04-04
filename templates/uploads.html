@@ -18,6 +18,7 @@
         	<thead>
             <th>File name</th>
         		<th >File size</th>
+        		<th >Upload time</th>
         	</thead>
         	<tbody>
         		{% for upload in uploads %}
@@ -27,6 +28,9 @@
               </td>
         			<td>			
                 {{ upload[1] }}  
+        			</td>
+        			<td>			
+                {{ upload[2] }}  
         			</td>
         		</tr>
         		{% endfor %}
