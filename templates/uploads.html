@@ -17,8 +17,8 @@
         <table class="table table-condensed table-striped">
         	<thead>
             <th>File name</th>
-        	  <th>File size</th>
-        	  <th>Upload time</th>
+            <th>File size</th>
+            <th>Upload time</th>
             <th>Reports</th>
         	</thead>
         	<tbody>
@@ -27,12 +27,12 @@
               <td>
                 <a href="/download/{{ upload[0] }}">{{ upload[0] }}</a>
               </td>
-        			<td>			
+              <td>
                 {{ upload[1] }}  
-        			</td>
-        			<td>			
+              </td>
+              <td>
                 {{ upload[2] }}  
-        			</td>
+              </td>
               <td>
                 <a target="_blank" href="https://www.virustotal.com/gui/search/{{ upload[0] }}">VT</a>
               </td>
