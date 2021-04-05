@@ -173,6 +173,10 @@ def get_log_files():
 	
 	return sorted(files)
 
+def get_sort_key():
+
+	return item[2]
+
 def get_uploaded_files():
 
 	#: find all uploaded files >= small_upload_size (likely actual payloads)
@@ -189,7 +193,7 @@ def get_uploaded_files():
 			tmp.append(str(mytime))
 			uploaded_files.append(tmp)
 
-	return sorted(uploaded_files)
+	return sorted(uploaded_files, key=get_sort_key, reverse=True)
 
 def render_log(current_logfile):
 
