@@ -17,8 +17,9 @@
         <table class="table table-condensed table-striped">
         	<thead>
             <th>File name</th>
-        		<th >File size</th>
-        		<th >Upload time</th>
+        	  <th>File size</th>
+        	  <th>Upload time</th>
+            <th>Reports</th>
         	</thead>
         	<tbody>
         		{% for upload in uploads %}
@@ -32,6 +33,9 @@
         			<td>			
                 {{ upload[2] }}  
         			</td>
+              <td>
+                <a target="_blank" href="https://www.virustotal.com/gui/search/{{ upload[0] }}">VT</a>
+              </td>
         		</tr>
         		{% endfor %}
         	</tbody>
