@@ -42,7 +42,7 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE TABLE loginpass (session TEXT(8), username TEXT, password TEXT, failed BOOL, UNIQUE(session, username, password))')
+	c.execute('CREATE TABLE sessions (session TEXT(8), username TEXT, password TEXT, failed BOOL, UNIQUE(session, username, password))')
 except sqlite3.OperationalError:
 	pass
 try:
@@ -54,11 +54,11 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE INDEX usernameindex ON loginpass(username)')
+	c.execute('CREATE INDEX usernameindex ON sessions(username)')
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE INDEX passwordindex ON loginpass(password)')
+	c.execute('CREATE INDEX passwordindex ON sessions(password)')
 except sqlite3.OperationalError:
 	pass
 
@@ -122,10 +122,10 @@ def show_stats_userpass():
 
 	page = 'stats-userpass'
 
-	c.execute("SELECT username, count(username) AS username_count FROM loginpass WHERE failed = 0 GROUP BY username ORDER BY username_count DESC")
+	c.execute("SELECT username, count(username) AS username_count FROM sessions WHERE failed = 0 GROUP BY username ORDER BY username_count DESC")
 	usernames = c.fetchall()
 
-	c.execute("SELECT password, count(password) AS password_count FROM loginpass WHERE failed = 0 GROUP BY password ORDER BY password_count DESC")
+	c.execute("SELECT password, count(password) AS password_count FROM sessions WHERE failed = 0 GROUP BY password ORDER BY password_count DESC")
 	passwords = c.fetchall()
 
 	return render_template('stats_userpass.html', usernames = usernames, passwords = passwords, version = version, page = page)
@@ -239,9 +239,9 @@ def render_log(current_logfile):
 			#: add username/password pair to db
 
 			if(j['eventid'] == 'cowrie.login.success'):
-				c.execute("INSERT OR IGNORE INTO loginpass(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 0 ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 0 ])
 			elif(j['eventid'] == 'cowrie.login.failed'):
-				c.execute("INSERT OR IGNORE INTO loginpass(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 1 ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 1 ])
 				
 
 			#: fix date/time to remove milliseconds and other junk
