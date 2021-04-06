@@ -42,7 +42,7 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE TABLE sessions (session TEXT(8), username TEXT, password TEXT, failed BOOL, UNIQUE(session, username, password))')
+	c.execute('CREATE TABLE sessions (session TEXT(8), ipaddress TEXT, username TEXT, password TEXT, failed BOOL, timestamp TEXT, UNIQUE(session, ipaddress))')
 except sqlite3.OperationalError:
 	pass
 try:
@@ -59,6 +59,10 @@ except sqlite3.OperationalError:
 	pass
 try:
 	c.execute('CREATE INDEX passwordindex ON sessions(password)')
+except sqlite3.OperationalError:
+	pass
+try:
+	c.execute('CREATE INDEX ipaddressindex ON sessions(ipaddress)')
 except sqlite3.OperationalError:
 	pass
 
@@ -239,9 +243,9 @@ def render_log(current_logfile):
 			#: add username/password pair to db
 
 			if(j['eventid'] == 'cowrie.login.success'):
-				c.execute("INSERT OR IGNORE INTO sessions(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 0 ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 0, j['timestamp']])
 			elif(j['eventid'] == 'cowrie.login.failed'):
-				c.execute("INSERT OR IGNORE INTO sessions(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 1 ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 1, j['timestamp']])
 				
 
 			#: fix date/time to remove milliseconds and other junk
