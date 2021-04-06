@@ -243,9 +243,9 @@ def render_log(current_logfile):
 			#: add username/password pair to db
 
 			if(j['eventid'] == 'cowrie.login.success'):
-				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 0, j['timestamp'] ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 0, j['timestamp'] ])
 			elif(j['eventid'] == 'cowrie.login.failed'):
-				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 1, j['timestamp'] ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 1, j['timestamp'] ])
 				
 
 			#: fix date/time to remove milliseconds and other junk
