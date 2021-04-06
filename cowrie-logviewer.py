@@ -173,7 +173,7 @@ def get_log_files():
 	
 	return sorted(files)
 
-def get_sort_key():
+def get_sort_key(item):
 
 	return item[2]
 
