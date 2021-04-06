@@ -240,7 +240,7 @@ def render_log(current_logfile):
 				#: add ip/country pair to db
 				c.execute("INSERT OR IGNORE INTO ip2country(ipaddress, countrycode) VALUES (?, ?)", [ j['src_ip'], j['country'] ])
 
-			#: add username/password pair to db
+			#: add session to db
 
 			if(j['eventid'] == 'cowrie.login.success'):
 				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 0, j['timestamp'] ])
