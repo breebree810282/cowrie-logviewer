@@ -45,7 +45,7 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE TABLE uploads (session TEXT(8), hash TEXT(64), bytes INTEGER, timestamp TEXT, url TEXT)')
+	c.execute('CREATE TABLE uploads (session TEXT(8), hash TEXT(64), bytes INTEGER, url TEXT, timestamp TEXT)')
 except sqlite3.OperationalError:
 	pass
 try:
