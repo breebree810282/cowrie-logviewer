@@ -240,12 +240,10 @@ def render_log(current_logfile):
 				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 1, j['timestamp'] ])
 			elif(j['eventid'] == 'cowrie.session.file_download'):
 				file_bytes = Path(dl_path + "/" + j['shasum']).stat().st_size
-				if url in j:
-					url = j['url']
-				elif:
+				if "url" not in j:
 					url = 'stdin'
-					
-				c.execute("INSERT OR IGNORE INTO uploads(session, hash, bytes, url, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['shasum'], file_bytes, url, j['timestamp'] ])
+
+				c.execute("INSERT OR IGNORE INTO uploads(session, hash, bytes, url, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['shasum'], file_bytes, j['url'], j['timestamp'] ])
 
 
 			#: fix date/time to remove milliseconds and other junk
