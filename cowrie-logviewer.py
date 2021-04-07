@@ -14,7 +14,6 @@ from path import Path
 from flask_compress import Compress
 import os.path
 import time
-from datetime import datetime
 
 #: change stuff here
 sqlite_file = 'cowrie-logviewer.sqlite'
@@ -185,12 +184,9 @@ def get_uploaded_files():
 	d = Path(dl_path)
 	for f in d.files('*'):
 		tmp = []
-		mytime = f.getmtime()
-		mytime = datetime.utcfromtimestamp(mytime).strftime('%Y-%m-%d @ %H:%M:%S')
 		if(f.size >= min_upload_size and f.name != '.gitignore'):
 			tmp.append(str(f.name))
-			tmp.append(str(f.size) + " Bytes")
-			tmp.append(str(mytime))
+			tmp.append(f.size)
 			uploaded_files.append(tmp)
 
 	return sorted(uploaded_files, key=get_sort_key, reverse=True)
