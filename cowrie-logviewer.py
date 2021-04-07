@@ -180,24 +180,16 @@ def get_log_files():
 	
 	return sorted(files)
 
-def get_sort_key(item):
-
-	return item[2]
-
 def get_uploaded_files():
 
 	#: find all uploaded files >= small_upload_size (likely actual payloads)
+	
+	conn = sqlite3.connect(sqlite_file)
+	c = conn.cursor()
 
-	uploaded_files = []
-	d = Path(dl_path)
-	for f in d.files('*'):
-		tmp = []
-		if(f.size >= min_upload_size and f.name != '.gitignore'):
-			tmp.append(str(f.name))
-			tmp.append(f.size)
-			uploaded_files.append(tmp)
+	c.execute("SELECT hash, bytes, timestamp FROM uploads GROUP BY hash ORDER BY timestamp DESC")
 
-	return sorted(uploaded_files, key=get_sort_key, reverse=True)
+	return c.fetchall()
 
 def render_log(current_logfile):
 
