@@ -45,7 +45,7 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE TABLE uploads (session TEXT(8), hash TEXT(64), timestamp TEXT, url TEXT)')
+	c.execute('CREATE TABLE uploads (session TEXT(8), hash TEXT(64), bytes INTEGER, timestamp TEXT, url TEXT)')
 except sqlite3.OperationalError:
 	pass
 try:
@@ -247,7 +247,7 @@ def render_log(current_logfile):
 			elif(j['eventid'] == 'cowrie.login.failed'):
 				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 1, j['timestamp'] ])
 			elif(j['eventid'] == 'cowrie.session.file_download'):
-				c.execute("INSERT OR IGNORE INTO uploads(session, hash, url, timestamp) VALUES (?, ?, ?, ?)", j['session'], j['shasum'], j['url'], j['timestamp'])
+				c.execute("INSERT OR IGNORE INTO uploads(session, hash, bytes, url, timestamp) VALUES (?, ?, ?, ?, ?)", j['session'], j['shasum'], Path.getsize(j['outfile']), j['url'], j['timestamp'])
 
 			#: fix date/time to remove milliseconds and other junk
 			j['datetime'] = str(dateutil.parser.parse(j['timestamp']))
