@@ -187,7 +187,7 @@ def get_uploaded_files():
 	conn = sqlite3.connect(sqlite_file)
 	c = conn.cursor()
 
-	c.execute("SELECT hash, bytes, timestamp FROM uploads GROUP BY hash ORDER BY timestamp DESC")
+	c.execute("SELECT hash, bytes, MIN(timestamp) FROM uploads GROUP BY hash ORDER BY timestamp DESC")
 
 	return c.fetchall()
 
