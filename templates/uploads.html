@@ -19,6 +19,8 @@
             <th>File name</th>
             <th>File size</th>
             <th>Upload time</th>
+            <th>IP Address</th>
+            <th>Session</th>
             <th>Reports</th>
           </thead>
           <tbody>
@@ -32,6 +34,12 @@
               </td>
               <td>
                 {{ upload[2] }}  
+              </td>
+              <td>
+                <a href="/ip/{{ upload[3] }}">{{ upload[3] }}</a>
+              </td>
+              <td>
+                <a href="/session/{{ upload[4] }}">{{ upload[4] }}</a> 
               </td>
               <td>
                 <a target="_blank" href="https://www.virustotal.com/gui/search/{{ upload[0] }}">VT</a>
