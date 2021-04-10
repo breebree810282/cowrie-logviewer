@@ -15,22 +15,38 @@
 
       <div class="table-responsive">
         <table class="table table-condensed table-striped">
-        	<thead>
+          <thead>
             <th>File name</th>
-        		<th >File size</th>
-        	</thead>
-        	<tbody>
-        		{% for upload in uploads %}
-        		<tr>
+            <th>File size</th>
+            <th>Upload time</th>
+            <th>IP Address</th>
+            <th>Session</th>
+            <th>Reports</th>
+          </thead>
+          <tbody>
+            {% for upload in uploads %}
+            <tr>
               <td>
                 <a href="/download/{{ upload[0] }}">{{ upload[0] }}</a>
               </td>
-        			<td>			
+              <td>
                 {{ upload[1] }}  
-        			</td>
-        		</tr>
-        		{% endfor %}
-        	</tbody>
+              </td>
+              <td>
+                {{ upload[2] }}  
+              </td>
+              <td>
+                <a href="/ip/{{ upload[3] }}">{{ upload[3] }}</a>
+              </td>
+              <td>
+                <a href="/session/{{ upload[4] }}">{{ upload[4] }}</a> 
+              </td>
+              <td>
+                <a target="_blank" href="https://www.virustotal.com/gui/search/{{ upload[0] }}">VT</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
        </div>
 

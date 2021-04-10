@@ -41,7 +41,11 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE TABLE loginpass (session TEXT(8), username TEXT, password TEXT, failed BOOL, UNIQUE(session, username, password))')
+	c.execute('CREATE TABLE sessions (session TEXT(8), ipaddress TEXT, username TEXT, password TEXT, failed BOOL, timestamp TEXT, UNIQUE(session, ipaddress))')
+except sqlite3.OperationalError:
+	pass
+try:
+	c.execute('CREATE TABLE uploads (session TEXT(8), hash TEXT(64), bytes INTEGER, url TEXT, timestamp TEXT)')
 except sqlite3.OperationalError:
 	pass
 try:
@@ -53,11 +57,15 @@ try:
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE INDEX usernameindex ON loginpass(username)')
+	c.execute('CREATE INDEX usernameindex ON sessions(username)')
 except sqlite3.OperationalError:
 	pass
 try:
-	c.execute('CREATE INDEX passwordindex ON loginpass(password)')
+	c.execute('CREATE INDEX passwordindex ON sessions(password)')
+except sqlite3.OperationalError:
+	pass
+try:
+	c.execute('CREATE INDEX ipaddressindex ON sessions(ipaddress)')
 except sqlite3.OperationalError:
 	pass
 
@@ -121,10 +129,10 @@ def show_stats_userpass():
 
 	page = 'stats-userpass'
 
-	c.execute("SELECT username, count(username) AS username_count FROM loginpass WHERE failed = 0 GROUP BY username ORDER BY username_count DESC")
+	c.execute("SELECT username, count(username) AS username_count FROM sessions WHERE failed = 0 GROUP BY username ORDER BY username_count DESC")
 	usernames = c.fetchall()
 
-	c.execute("SELECT password, count(password) AS password_count FROM loginpass WHERE failed = 0 GROUP BY password ORDER BY password_count DESC")
+	c.execute("SELECT password, count(password) AS password_count FROM sessions WHERE failed = 0 GROUP BY password ORDER BY password_count DESC")
 	passwords = c.fetchall()
 
 	return render_template('stats_userpass.html', usernames = usernames, passwords = passwords, version = version, page = page)
@@ -175,17 +183,13 @@ def get_log_files():
 def get_uploaded_files():
 
 	#: find all uploaded files >= small_upload_size (likely actual payloads)
+	
+	conn = sqlite3.connect(sqlite_file)
+	c = conn.cursor()
 
-	uploaded_files = []
-	d = Path(dl_path)
-	for f in d.files('*'):
-		tmp = []
-		if(f.size >= min_upload_size and f.name != '.gitignore'):
-			tmp.append(str(f.name))
-			tmp.append(f.size)
-			uploaded_files.append(tmp)
+	c.execute("SELECT hash, bytes, MIN(timestamp), ipaddress, uploads.session FROM uploads LEFT JOIN sessions ON uploads.session = sessions.session GROUP BY hash ORDER BY timestamp DESC")
 
-	return sorted(uploaded_files)
+	return c.fetchall()
 
 def render_log(current_logfile):
 
@@ -228,13 +232,19 @@ def render_log(current_logfile):
 				#: add ip/country pair to db
 				c.execute("INSERT OR IGNORE INTO ip2country(ipaddress, countrycode) VALUES (?, ?)", [ j['src_ip'], j['country'] ])
 
-			#: add username/password pair to db
+			#: add session to db
 
 			if(j['eventid'] == 'cowrie.login.success'):
-				c.execute("INSERT OR IGNORE INTO loginpass(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 0 ])
+				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 0, j['timestamp'] ])
 			elif(j['eventid'] == 'cowrie.login.failed'):
-				c.execute("INSERT OR IGNORE INTO loginpass(session, username, password, failed) VALUES (?, ?, ?, ?)", [ j['session'], j['username'], j['password'], 1 ])
-				
+				c.execute("INSERT OR IGNORE INTO sessions(session, ipaddress, username, password, failed, timestamp) VALUES (?, ?, ?, ?, ?, ?)", [ j['session'], j['src_ip'], j['username'], j['password'], 1, j['timestamp'] ])
+			elif(j['eventid'] == 'cowrie.session.file_download'):
+				file_bytes = Path(dl_path + "/" + j['shasum']).stat().st_size
+				if "url" not in j:
+					j['url'] = 'stdin'
+
+				c.execute("INSERT OR IGNORE INTO uploads(session, hash, bytes, url, timestamp) VALUES (?, ?, ?, ?, ?)", [ j['session'], j['shasum'], file_bytes, j['url'], j['timestamp'] ])
+
 
 			#: fix date/time to remove milliseconds and other junk
 			j['datetime'] = str(dateutil.parser.parse(j['timestamp']))
